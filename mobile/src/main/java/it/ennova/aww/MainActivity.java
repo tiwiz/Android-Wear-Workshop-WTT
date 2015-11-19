@@ -12,10 +12,15 @@ import android.view.View;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import it.ennova.aww.communicationlayer.CommunicationLayer;
 import it.ennova.aww.communicationlayer.GoogleApiWrapper;
 
-import static android.support.v4.app.NotificationCompat.*;
+import static android.support.v4.app.NotificationCompat.Action;
+import static android.support.v4.app.NotificationCompat.Builder;
+import static android.support.v4.app.NotificationCompat.WearableExtender;
 
 /**
  * TIP: http://developer.android.com/training/wearables/notifications/creating.html
@@ -24,7 +29,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private Notification notification;
     private NotificationManagerCompat notificationManager;
-    private final int NOTIFICATION_REQUEST_ID = 1;
     private GoogleApiClient googleApiClient;
     private Bitmap backgroundBitmap;
 
@@ -84,6 +88,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 .extend(wearableExtender)
                 .build();
 
+        int NOTIFICATION_REQUEST_ID = 1;
         notificationManager.notify(NOTIFICATION_REQUEST_ID, notification);
     }
 
@@ -92,6 +97,33 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      */
     private void addPageToNotification() {
 
+        WearableExtender extender = new WearableExtender().addPages(getNotificationPages());
+
+        notification = new Builder(this)
+                .setContentTitle("Workshop")
+                .setContentText("Working with pages")
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .extend(extender)
+                .build();
+
+        int NOTIFICATION_REQUEST_ID_PAGES = 2;
+        notificationManager.notify(NOTIFICATION_REQUEST_ID_PAGES, notification);
+    }
+
+    private List<Notification> getNotificationPages() {
+
+        List<Notification> pages = new ArrayList<>(3);
+
+        for (int i = 0; i < 3; i++) {
+
+            NotificationCompat.BigTextStyle additionalPageStyle = new NotificationCompat.BigTextStyle();
+            additionalPageStyle.setBigContentTitle("Additional page")
+                    .bigText(String.format("This is a very long text representing iteration number %d", i + 1));
+
+            pages.add(new NotificationCompat.Builder(this).setStyle(additionalPageStyle).build());
+        }
+
+        return pages;
     }
 
     /**

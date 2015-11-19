@@ -18,24 +18,11 @@
         android:layout_marginTop="16dp"
         android:background="@android:color/darker_gray" />
 
-    <android.support.design.widget.TextInputLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <EditText
-            android:id="@+id/newMessageEditText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Insert new message"
-            android:maxLines="1" />
-
-    </android.support.design.widget.TextInputLayout>
-
     <Button
         android:id="@+id/addPageToNotificationButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Add page" />
+        android:text="Show notification with pages" />
 
     <View
         android:layout_width="match_parent"
