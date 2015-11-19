@@ -7,9 +7,24 @@
     tools:context="it.ennova.aww.MainActivity"
     tools:deviceIds="wear">
 
-    <android.support.wearable.view.WearableListView
-        android:id="@+id/conference_list_view"
+    <ViewFlipper
+        android:id="@+id/mainViewFlipper"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent">
+
+        <android.support.wearable.view.WearableListView
+            android:id="@+id/conference_list_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@android:color/black"
+            android:textSize="18sp"
+            android:textColor="@android:color/white"
+            android:text="AMBIENT MODE"/>
+
+    </ViewFlipper>
 
 </android.support.wearable.view.BoxInsetLayout>

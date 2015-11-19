@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.wearable.activity.WearableActivity;
 import android.support.wearable.view.WearableListView;
 import android.view.View;
+import android.widget.ViewFlipper;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -11,13 +12,11 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import it.ennova.aww.communicationlayer.CommunicationLayer;
 import it.ennova.aww.communicationlayer.GoogleApiWrapper;
 
-public class MainActivity extends WearableActivity implements CommunicationLayer{
-
-    private final static String[] conferences = {"Wearable Tech Torino", "Droidcon Italy 2016",
-            "View Conference", "#FutureDecoded", "Codemotion Milan", "Torino Mini Maker Faire",
-            "Torino Film Festival", "SMAU"};
+public class MainActivity extends WearableActivity
+        implements CommunicationLayer, OnRecyclerViewItemClick<String> {
 
     private WearableListView wearableListView;
+    private ViewFlipper viewFlipper;
     private boolean isConnected = false;
     private GoogleApiClient googleApiClient;
 
@@ -27,7 +26,9 @@ public class MainActivity extends WearableActivity implements CommunicationLayer
         setContentView(R.layout.activity_main);
         setAmbientEnabled();
 
+        viewFlipper = (ViewFlipper) findViewById(R.id.mainViewFlipper);
         wearableListView = (WearableListView) findViewById(R.id.conference_list_view);
+        wearableListView.setAdapter(new ConferenceAdapter(this));
         googleApiClient = new GoogleApiWrapper<>().build(this);
     }
 
@@ -66,9 +67,9 @@ public class MainActivity extends WearableActivity implements CommunicationLayer
      */
     private void updateDisplay() {
         if (isAmbient()) {
-
+            viewFlipper.showNext();
         } else {
-
+            viewFlipper.showPrevious();
         }
     }
 
@@ -88,5 +89,10 @@ public class MainActivity extends WearableActivity implements CommunicationLayer
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
 
+    }
+
+    @Override
+    public void onItemClick(String itemData) {
+        
     }
 }
