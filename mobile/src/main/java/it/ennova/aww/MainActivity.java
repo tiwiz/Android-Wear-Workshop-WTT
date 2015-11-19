@@ -1,6 +1,8 @@
 package it.ennova.aww;
 
 import android.app.Notification;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
@@ -13,6 +15,8 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import it.ennova.aww.communicationlayer.CommunicationLayer;
 import it.ennova.aww.communicationlayer.GoogleApiWrapper;
 
+import static android.support.v4.app.NotificationCompat.*;
+
 /**
  * TIP: http://developer.android.com/training/wearables/notifications/creating.html
  */
@@ -22,6 +26,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private NotificationManagerCompat notificationManager;
     private final int NOTIFICATION_REQUEST_ID = 1;
     private GoogleApiClient googleApiClient;
+    private Bitmap backgroundBitmap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +37,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         findViewById(R.id.addPageToNotificationButton).setOnClickListener(this);
 
         notificationManager = NotificationManagerCompat.from(this);
+        backgroundBitmap = BitmapFactory.decodeResource(getResources(),
+                R.drawable.ic_notification_background);
 
         googleApiClient = new GoogleApiWrapper<>().build(this);
     }
@@ -64,10 +71,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      * Makes the notification
      */
     private void addNotification() {
-        notification = new NotificationCompat.Builder(this)
+        Action action = new Action.Builder(R.mipmap.ic_launcher, "WTT", null).build();
+
+        WearableExtender wearableExtender = new WearableExtender()
+                .setBackground(backgroundBitmap)
+                .addAction(action);
+
+        notification = new Builder(this)
                 .setContentTitle("Workshop")
                 .setContentText("Wearable Tech Torino")
                 .setSmallIcon(R.mipmap.ic_launcher)
+                .extend(wearableExtender)
                 .build();
 
         notificationManager.notify(NOTIFICATION_REQUEST_ID, notification);
