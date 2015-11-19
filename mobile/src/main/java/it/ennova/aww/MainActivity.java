@@ -8,9 +8,13 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.wearable.MessageApi;
+import com.google.android.gms.wearable.MessageEvent;
+import com.google.android.gms.wearable.Wearable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,12 +29,13 @@ import static android.support.v4.app.NotificationCompat.WearableExtender;
 /**
  * TIP: http://developer.android.com/training/wearables/notifications/creating.html
  */
-public class MainActivity extends AppCompatActivity implements View.OnClickListener, CommunicationLayer {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener, CommunicationLayer, MessageApi.MessageListener {
 
     private Notification notification;
     private NotificationManagerCompat notificationManager;
     private GoogleApiClient googleApiClient;
     private Bitmap backgroundBitmap;
+    private TextView responseText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +44,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         findViewById(R.id.showNotificationButton).setOnClickListener(this);
         findViewById(R.id.addPageToNotificationButton).setOnClickListener(this);
+        responseText = (TextView) findViewById(R.id.messageApiResult);
 
         notificationManager = NotificationManagerCompat.from(this);
         backgroundBitmap = BitmapFactory.decodeResource(getResources(),
@@ -131,7 +137,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      */
     @Override
     public void onConnected(Bundle bundle) {
-
+        Wearable.MessageApi.addListener(googleApiClient, this);
     }
 
     @Override
@@ -142,5 +148,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
 
+    }
+
+    @Override
+    public void onMessageReceived(MessageEvent messageEvent) {
+        if (messageEvent.getPath().equals(CommunicationLayer.MESSAGE_PATH)) {
+            responseText.setText(new String(messageEvent.getData()));
+        }
     }
 }

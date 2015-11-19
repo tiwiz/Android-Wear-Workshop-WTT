@@ -3,22 +3,28 @@ package it.ennova.aww;
 import android.os.Bundle;
 import android.support.wearable.activity.WearableActivity;
 import android.support.wearable.view.WearableListView;
-import android.view.View;
 import android.widget.ViewFlipper;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.wearable.MessageApi;
+import com.google.android.gms.wearable.Node;
+import com.google.android.gms.wearable.NodeApi;
+import com.google.android.gms.wearable.Wearable;
+
+import java.util.List;
 
 import it.ennova.aww.communicationlayer.CommunicationLayer;
 import it.ennova.aww.communicationlayer.GoogleApiWrapper;
 
 public class MainActivity extends WearableActivity
-        implements CommunicationLayer, OnRecyclerViewItemClick<String> {
+        implements CommunicationLayer, OnRecyclerViewItemClick<String>, ResultCallback<NodeApi.GetConnectedNodesResult> {
 
-    private WearableListView wearableListView;
     private ViewFlipper viewFlipper;
-    private boolean isConnected = false;
     private GoogleApiClient googleApiClient;
+    private List<Node> nodesList;
+    private final ResultCallback messageSentCallback = new MessageCallback();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,7 +33,7 @@ public class MainActivity extends WearableActivity
         setAmbientEnabled();
 
         viewFlipper = (ViewFlipper) findViewById(R.id.mainViewFlipper);
-        wearableListView = (WearableListView) findViewById(R.id.conference_list_view);
+        WearableListView wearableListView = (WearableListView) findViewById(R.id.conference_list_view);
         wearableListView.setAdapter(new ConferenceAdapter(this));
         googleApiClient = new GoogleApiWrapper<>().build(this);
     }
@@ -78,7 +84,12 @@ public class MainActivity extends WearableActivity
      */
     @Override
     public void onConnected(Bundle bundle) {
-        isConnected = true;
+        Wearable.NodeApi.getConnectedNodes(googleApiClient).setResultCallback(this);
+    }
+
+    @Override
+    public void onResult(NodeApi.GetConnectedNodesResult result) {
+        nodesList = result.getNodes();
     }
 
     @Override
@@ -93,6 +104,23 @@ public class MainActivity extends WearableActivity
 
     @Override
     public void onItemClick(String itemData) {
-        
+        if (nodesList != null) {
+            forwardMessageToNodes(itemData);
+        }
+    }
+
+    private void forwardMessageToNodes(String itemData) {
+        for (Node node : nodesList) {
+            Wearable.MessageApi.sendMessage(googleApiClient, node.getId(),
+                    CommunicationLayer.MESSAGE_PATH, itemData.getBytes()).setResultCallback(messageSentCallback);
+        }
+    }
+
+    private class MessageCallback implements ResultCallback<MessageApi.SendMessageResult> {
+
+        @Override
+        public void onResult(MessageApi.SendMessageResult sendMessageResult) {
+
+        }
     }
 }

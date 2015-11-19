@@ -31,4 +31,20 @@
         android:layout_marginTop="16dp"
         android:background="@android:color/darker_gray" />
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Last selected item"/>
+
+    <TextView
+        android:id="@+id/messageApiResult"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:layout_marginTop="16dp"
+        android:textSize="20sp"
+        android:textColor="@android:color/darker_gray"
+        android:text="NONE"/>
+
 </LinearLayout>
